@@ -178,3 +178,5 @@ PINECONE_INDEX_NAME=real-estate-listings
 You're ready to go! 🚀
 
 
+
+

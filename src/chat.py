@@ -3,7 +3,11 @@ import asyncio
 import os
 
 # Third-party library imports
+from pathlib import Path
 from dotenv import load_dotenv
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+load_dotenv(dotenv_path=PROJECT_ROOT / ".env", override=True)
 from pinecone import Pinecone
 from typing import List
 from pydantic_ai.messages import ModelMessage
@@ -34,11 +38,9 @@ except ImportError:
     COST_TRACKING_AVAILABLE = False
 
 async def main():
-
-    load_dotenv()
     pinecone_api_key = os.getenv("PINECONE_API_KEY")
     pinecone_index_name = os.getenv("PINECONE_INDEX_NAME", "real-estate-listings")
-    n8n_webhook_url = os.getenv("N8N_WEBHOOK_URL")
+    make_webhook_url = os.getenv("MAKE_WEBHOOK_URL")
     agent_timezone = os.getenv("AGENT_TIMEZONE")
     agent_schedule_config = AgentScheduleConfig(
         timezone=agent_timezone
@@ -53,7 +55,7 @@ async def main():
     agent_deps = AgentDependencies(
         pinecone_index=pinecone_index,
         pinecone_index_name=pinecone_index_name,
-        n8n_webhook_url=n8n_webhook_url,
+        make_webhook_url=make_webhook_url,
         agent_schedule_config=agent_schedule_config
     )
 

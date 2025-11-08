@@ -8,16 +8,16 @@ import pytz
 # Local application imports
 try:
     from src.models.agent_schedule_config import AgentScheduleConfig
-    from src.utils.appointment_utils import fetch_busy_slots_from_n8n
+    from src.utils.appointment_utils import fetch_busy_slots_from_make
 except ModuleNotFoundError:
     from models.agent_schedule_config import AgentScheduleConfig
-    from utils.appointment_utils import fetch_busy_slots_from_n8n
+    from utils.appointment_utils import fetch_busy_slots_from_make
 
 
 def compute_available_slots(
     parsed_datetime: datetime,
     agent_schedule_config: AgentScheduleConfig,
-    n8n_webhook_url: str
+    make_webhook_url: str
 ) -> list[str]:
 
     work_start = agent_schedule_config.work_start
@@ -28,7 +28,7 @@ def compute_available_slots(
 
     tz = pytz.timezone(timezone)
     date = parsed_datetime.astimezone(tz).date()  # just the date portion
-    busy_slots = fetch_busy_slots_from_n8n(parsed_datetime, n8n_webhook_url)
+    busy_slots = fetch_busy_slots_from_make(parsed_datetime, make_webhook_url)
 
     available_slots = []
     start_dt = tz.localize(datetime.combine(date, work_start))

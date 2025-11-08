@@ -10,7 +10,7 @@ except ModuleNotFoundError:
 class AgentDependencies:  
     pinecone_index: any  # Pinecone Index object
     pinecone_index_name: str
-    n8n_webhook_url: str
+    make_webhook_url: str
     agent_schedule_config: AgentScheduleConfig
 
 SYSTEM_PROMPT = """

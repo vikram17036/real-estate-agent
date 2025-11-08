@@ -12,7 +12,7 @@ This is a **production-ready AI-powered Real Estate Voice Agent** that can handl
 
 1. **Natural Language Understanding**: The agent converses naturally with potential buyers/renters, collecting their preferences through conversation
 2. **Property Recommendations**: Uses vector similarity search to find matching properties from a database of listings
-3. **Appointment Scheduling**: Integrates with calendar systems (via n8n) to check availability and book property showings
+3. **Appointment Scheduling**: Integrates with calendar systems (via Make) to check availability and book property showings
 4. **Multi-Modal Interface**: Works via voice calls (VAPI) and text chat (CLI)
 
 ### User Flow
@@ -64,8 +64,8 @@ This is a **production-ready AI-powered Real Estate Voice Agent** that can handl
 
 | Component | Technology | Purpose |
 |-----------|-----------|---------|
-| **Workflow Automation** | [n8n](https://n8n.io/) | Calendar integration and appointment booking |
-| **Calendar API** | Via n8n webhook | Fetches busy slots and creates appointments |
+| **Workflow Automation** | [Make](https://www.make.com/) | Calendar integration and appointment booking |
+| **Calendar API** | Via Make webhook | Fetches busy slots and creates appointments |
 | **Time Handling** | `pytz`, `dateparser` | Timezone-aware date/time parsing |
 
 ### Development & Infrastructure
@@ -80,7 +80,7 @@ This is a **production-ready AI-powered Real Estate Voice Agent** that can handl
 
 ### Supporting Libraries
 
-- **HTTP Client**: `httpx`, `requests` - API calls to n8n
+- **HTTP Client**: `httpx`, `requests` - API calls to Make
 - **Date Parsing**: `dateparser` - Natural language date parsing
 - **Timezone**: `pytz` - Timezone handling
 - **JSON**: Built-in `json` - Data serialization
@@ -128,7 +128,7 @@ This is a **production-ready AI-powered Real Estate Voice Agent** that can handl
          │               │               │
          ▼               ▼               ▼
 ┌────────────────┐ ┌──────────────┐ ┌──────────────┐
-│   Pinecone     │ │     n8n      │ │   OpenAI     │
+│   Pinecone     │ │     Make     │ │   OpenAI     │
 │  (Vector DB)   │ │  (Calendar)  │ │  (Embedding) │
 └────────────────┘ └──────────────┘ └──────────────┘
 ```
@@ -146,7 +146,7 @@ Caller → VAPI Platform → Speech-to-Text → POST /vapi-webhook/chat/completi
                                                       ↓
                                     Tools (recommend_properties, etc.)
                                                       ↓
-                                    Pinecone / n8n / OpenAI
+                                    Pinecone / Make / OpenAI
                                                       ↓
                                     Agent Response → FastAPI
                                                       ↓
@@ -176,13 +176,13 @@ Agent describes properties naturally
          ↓
 User: "I'd like to see the first one"
          ↓
-get_agent_availability tool → n8n webhook → Calendar API
+get_agent_availability tool → Make webhook → Calendar API
          ↓
 Available time slots returned
          ↓
 User selects time
          ↓
-schedule_appointment tool → n8n webhook → Calendar event created
+schedule_appointment tool → Make webhook → Calendar event created
 ```
 
 ---
@@ -210,19 +210,16 @@ real-estate-agent-main/
 │   ├── utils/                         # Helper utilities
 │   │   ├── embedding_utils.py         # OpenAI embedding functions
 │   │   ├── time_utils.py              # Time slot computation
-│   │   └── appointment_utils.py       # n8n webhook integration
+│   │   └── appointment_utils.py       # Make webhook integration
 │   │
 │   ├── data/                          # Data loading scripts
 │   │   ├── load_listings.py           # Load listings into Pinecone
-│   │   ├── query_listings.py          # Query testing utilities
-│   │   ├── data_config.py             # Data configuration
-│   │   └── chicago_listings_1000.json # Sample property data
+│   │   └── data_config.py             # Data configuration
 │   │
 │   ├── chat.py                        # CLI text chat interface
 │   └── voice_vapi.py                  # FastAPI webhook for VAPI
 │
-├── chroma_db/                          # Legacy ChromaDB data (deprecated)
-├── n8n/                                # n8n workflow configuration
+├── n8n/                                # Make scenario configuration (legacy folder name)
 │   └── Real_Estate_Agent.json
 │
 ├── requirements.txt                   # Python dependencies
@@ -282,7 +279,7 @@ realtor_agent = Agent(
 - **Input**: `UserProfile`, optional `date_time_preference` (e.g., "tomorrow", "next Friday")
 - **Process**:
   1. Parses natural language date/time
-  2. Fetches busy slots from n8n calendar
+  2. Fetches busy slots from Make scenario
   3. Computes available slots with buffer logic
   4. Formats for LLM consumption
 - **Output**: JSON string with available time slots
@@ -292,7 +289,7 @@ realtor_agent = Agent(
 - **Process**:
   1. Parses selected date/time
   2. Creates appointment payload
-  3. Sends to n8n webhook
+  3. Sends to Make webhook
   4. Returns confirmation message
 - **Output**: Confirmation message string
 
@@ -351,7 +348,7 @@ data: {"id":"chatcmpl-123","object":"chat.completion.chunk","created":1234567,"m
 data: [DONE]
 ```
 
-### 5. Calendar Integration (n8n)
+### 5. Calendar Integration (Make)
 
 **Two Modes**:
 
@@ -467,7 +464,7 @@ PINECONE_INDEX_NAME=real-estate-listings
 
 # Optional
 AGENT_TIMEZONE=America/Chicago
-N8N_WEBHOOK_URL=https://your-n8n-webhook.com
+MAKE_WEBHOOK_URL=https://your-make-webhook.com
 VAPI_EXPOSE_PORT=8000
 ```
 
@@ -507,7 +504,7 @@ VAPI_EXPOSE_PORT=8000
 - No persistent user profiles
 - No multi-language support
 - Limited to properties in Pinecone database
-- Requires n8n for calendar integration (no direct Google Calendar)
+- Requires Make for calendar integration (no direct Google Calendar)
 
 ---
 
@@ -517,7 +514,7 @@ VAPI_EXPOSE_PORT=8000
 
 - **User Data**: Stored in-memory during conversation, not persisted
 - **API Keys**: Stored in `.env` file (not committed to repo)
-- **Phone Numbers**: Normalized and sent to n8n for appointments
+- **Phone Numbers**: Normalized and sent to Make for appointments
 - **Property Data**: Public listing information
 
 ### Best Practices
@@ -547,9 +544,9 @@ VAPI_EXPOSE_PORT=8000
    - Per-minute pricing for phone calls
    - Varies by provider
 
-4. **n8n**:
-   - Self-hosted: Free
-   - Cloud: Paid plans available
+4. **Make**:
+   - Free tier with execution limits
+   - Paid plans available
 
 ---
 
@@ -602,7 +599,7 @@ python src/chat.py
 - **Pinecone**: https://www.pinecone.io/learn/
 - **VAPI**: https://docs.vapi.ai/
 - **FastAPI**: https://fastapi.tiangolo.com/
-- **n8n**: https://docs.n8n.io/
+- **Make**: https://www.make.com/en/help
 
 ### Concepts to Understand
 

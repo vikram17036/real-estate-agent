@@ -25,8 +25,8 @@ OPENAI_LLM_MODEL=gpt-4o-mini  # or gpt-4, gpt-3.5-turbo, etc.
 # Database configuration
 CHROMA_DB_LISTINGS=real_estate_listings
 
-# Optional: n8n webhook (for scheduling tests)
-N8N_WEBHOOK_URL=https://your-n8n-webhook-url.com
+# Optional: Make webhook (for scheduling tests)
+MAKE_WEBHOOK_URL=https://your-make-webhook-url.com
 AGENT_TIMEZONE=America/Chicago
 ```
 
@@ -141,7 +141,7 @@ The agent should:
 - ✅ Describe properties in friendly, conversational tone
 
 ### 3. **Scheduling (Optional)**
-If n8n webhook is configured:
+If Make webhook is configured:
 - ✅ Check agent availability
 - ✅ Schedule appointments
 - ✅ Handle date/time preferences
@@ -231,8 +231,8 @@ Use this checklist to verify agent functionality:
 - [ ] Agent calls `recommend_properties` tool
 - [ ] Agent describes properties conversationally
 - [ ] Agent offers to schedule showing
-- [ ] Agent checks availability (if n8n configured)
-- [ ] Agent schedules appointment (if n8n configured)
+- [ ] Agent checks availability (if Make configured)
+- [ ] Agent schedules appointment (if Make configured)
 
 ---
 

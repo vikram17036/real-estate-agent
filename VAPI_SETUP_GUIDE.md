@@ -303,7 +303,7 @@ But it **won't include**:
 - Your FastAPI server code
 - Your agent logic
 - Your ChromaDB data
-- Your n8n workflow
+- Your Make scenario
 
 Those are separate components that need to be set up independently.
 

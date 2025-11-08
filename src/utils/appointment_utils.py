@@ -14,12 +14,12 @@ except ModuleNotFoundError:
 
 
 
-def send_appointment_to_n8n(
+def send_appointment_to_make(
         profile: UserProfile,
         property: PropertyRecommendation,
         start_dt: datetime,
         end_dt: datetime,
-        n8n_webhook_url: str
+        make_webhook_url: str
         ) -> str:
 
     # Construct event title and body
@@ -48,18 +48,18 @@ def send_appointment_to_n8n(
 
     print(f"schedule appt payload: {payload}")
     try:
-        response = requests.post(n8n_webhook_url, json=payload)
+        response = requests.post(make_webhook_url, json=payload)
         response.raise_for_status()
         data = response.json()
         return data.get("confirmation_message", "Your appointment has been scheduled.")
     except Exception as e:
-        print(f"[schedule_appointment] Failed to call n8n: {e}")
+        print(f"[schedule_appointment] Failed to call Make webhook: {e}")
         return "There was an issue scheduling the appointment. Please try again later."
 
 
-def fetch_busy_slots_from_n8n(
+def fetch_busy_slots_from_make(
         start_datetime: datetime,
-        n8n_webhook_url: str) -> list[tuple[datetime, datetime]]:
+        make_webhook_url: str) -> list[tuple[datetime, datetime]]:
     end_datetime = start_datetime + timedelta(days=1)
 
     payload = {
@@ -68,7 +68,7 @@ def fetch_busy_slots_from_n8n(
         "end": end_datetime.isoformat()
     }
 
-    response = requests.post(n8n_webhook_url, json=payload)
+    response = requests.post(make_webhook_url, json=payload)
     response.raise_for_status()
     data = response.json()
 
@@ -93,7 +93,7 @@ def fetch_busy_slots_from_n8n(
                 start = parse_iso(start_raw)
                 end = parse_iso(end_raw)
             except Exception as exc:
-                print(f"[fetch_busy_slots_from_n8n] Skipping malformed slot ({start_raw}, {end_raw}): {exc}")
+                print(f"[fetch_busy_slots_from_make] Skipping malformed slot ({start_raw}, {end_raw}): {exc}")
                 continue
 
             busy_slots.append((start, end))

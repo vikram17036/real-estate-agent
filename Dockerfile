@@ -20,7 +20,6 @@ RUN python -m pip install -U pip setuptools wheel \
 
 # Copy app code
 COPY src/ ./src/
-COPY chroma_db/ ./chroma_db/
 
 EXPOSE 8000
 ENV PYTHONPATH=/app

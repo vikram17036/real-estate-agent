@@ -3,7 +3,11 @@ import os
 import json
 
 # Third-party library imports
+from pathlib import Path
 from dotenv import load_dotenv
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+load_dotenv(dotenv_path=PROJECT_ROOT / ".env", override=True)
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -13,6 +17,7 @@ from pinecone import Pinecone
 
 try:
     import logfire
+    logfire.configure(send_to_logfire='if-token-present')
     LOGFIRE_AVAILABLE = True
 except ImportError:
     logfire = None
@@ -40,13 +45,10 @@ except ModuleNotFoundError:
     COST_AVAILABLE = False
 
 
-if LOGFIRE_AVAILABLE:
-    logfire.configure(send_to_logfire='if-token-present')
-
-load_dotenv()
+# (Logfire already configured above if available)
 pinecone_api_key = os.getenv("PINECONE_API_KEY")
 pinecone_index_name = os.getenv("PINECONE_INDEX_NAME", "real-estate-listings")
-n8n_webhook_url = os.getenv("N8N_WEBHOOK_URL")
+make_webhook_url = os.getenv("MAKE_WEBHOOK_URL")
 agent_timezone = os.getenv("AGENT_TIMEZONE")
 port = int(os.getenv("VAPI_EXPOSE_PORT", 8000))
 
@@ -93,7 +95,7 @@ pinecone_index = pc.Index(pinecone_index_name)
 agent_dependencies = AgentDependencies(
     pinecone_index=pinecone_index,
     pinecone_index_name=pinecone_index_name,
-    n8n_webhook_url=n8n_webhook_url,
+    make_webhook_url=make_webhook_url,
     agent_schedule_config=agent_schedule_config
     )
 

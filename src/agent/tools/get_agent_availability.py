@@ -32,7 +32,7 @@ async def get_agent_availability(
     print(f"profile in get_agent_availability {normalized_user_profile}")
 
     agent_timezone = ctx.deps.agent_schedule_config.timezone
-    n8n_webhook_url = ctx.deps.n8n_webhook_url
+    make_webhook_url = ctx.deps.make_webhook_url
 
     tz = pytz.timezone(agent_timezone)
     parsed_datetime = None
@@ -72,7 +72,7 @@ async def get_agent_availability(
 
     agent_schedule_config = ctx.deps.agent_schedule_config
     # Now compute free slots based on parsed datetime
-    available_slots = compute_available_slots(parsed_datetime, agent_schedule_config, n8n_webhook_url)
+    available_slots = compute_available_slots(parsed_datetime, agent_schedule_config, make_webhook_url)
     available_slots_formatted = format_slots_for_llm(available_slots, agent_timezone)
     print(f"formatted available slots for LLM {available_slots_formatted}")
 

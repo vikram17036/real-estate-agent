@@ -3,7 +3,7 @@
 ## ✅ What You Need
 
 1. **OpenAI API Key** - Get from https://platform.openai.com/api-keys
-2. **ChromaDB with listings** - Already loaded (you have `chroma_db/` folder)
+2. **Pinecone index with listings** - Run `src/data/load_listings.py` once to populate
 3. **Python environment** - With dependencies installed
 
 ---
@@ -17,16 +17,17 @@ Create a `.env` file in the root directory (`real-estate-agent-main/`):
 ```env
 OPENAI_API_KEY=sk-your-key-here
 OPENAI_LLM_MODEL=gpt-4o-mini
-CHROMA_DB_LISTINGS=real_estate_listings
+PINECONE_API_KEY=pc-your-key-here
+PINECONE_INDEX_NAME=real-estate-listings
 AGENT_TIMEZONE=America/Chicago
-N8N_WEBHOOK_URL=https://your-webhook-url.com
+MAKE_WEBHOOK_URL=https://your-make-webhook-url.com
 ```
 
 **Minimum required:**
 ```env
 OPENAI_API_KEY=sk-your-key-here
 OPENAI_LLM_MODEL=gpt-4o-mini
-CHROMA_DB_LISTINGS=real_estate_listings
+PINECONE_API_KEY=pc-your-key-here
 ```
 
 ### Step 2: Navigate to project
@@ -70,7 +71,7 @@ Agent: [Will recommend properties and ask about scheduling]
    - Agent collects all required fields
 
 2. **Property Recommendations** ✅
-   - Agent searches ChromaDB
+   - Agent queries Pinecone
    - Agent describes properties nicely
 
 3. **Scheduling** (optional)
@@ -89,9 +90,9 @@ pip install -r requirements.txt
 **"OPENAI_API_KEY not found"**
 - Create `.env` file with your API key
 
-**"Collection not found"**
-- ChromaDB might need listings loaded
-- Check if `chroma_db/` folder exists
+**"Index not found"**
+- Pinecone might need listings loaded
+- Confirm `PINECONE_INDEX_NAME` exists and contains vectors
 
 **"Agent not responding"**
 - Check OpenAI API key is valid
@@ -102,5 +103,7 @@ pip install -r requirements.txt
 ## 📝 Exit Chat
 
 Type `exit` or `quit` to end the session and see cost summary.
+
+
 
 

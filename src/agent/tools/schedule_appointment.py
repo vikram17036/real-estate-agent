@@ -8,13 +8,13 @@ from pydantic_ai import RunContext
 
 # Local application imports
 try:
-    from src.utils.appointment_utils import send_appointment_to_n8n
+    from src.utils.appointment_utils import send_appointment_to_make
     from src.agent.agent_config import AgentDependencies
     from src.agent.realtor_agent import realtor_agent
     from src.models.property_recommendation import PropertyRecommendation
     from src.models.user_profile import UserProfile, normalize_user_profile
 except ModuleNotFoundError:
-    from utils.appointment_utils import send_appointment_to_n8n
+    from utils.appointment_utils import send_appointment_to_make
     from agent.agent_config import AgentDependencies
     from agent.realtor_agent import realtor_agent
     from models.property_recommendation import PropertyRecommendation
@@ -54,6 +54,6 @@ async def schedule_appointment(
     # Compute end time (1 hour after start)
     end_dt = start_dt + timedelta(hours=1)
 
-    n8n_webhook_url = ctx.deps.n8n_webhook_url
-    appt_response = send_appointment_to_n8n(normalized_profile, property, start_dt, end_dt, n8n_webhook_url)
+    make_webhook_url = ctx.deps.make_webhook_url
+    appt_response = send_appointment_to_make(normalized_profile, property, start_dt, end_dt, make_webhook_url)
     return appt_response

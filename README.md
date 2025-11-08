@@ -1,7 +1,7 @@
 
 # 🏡 Real Estate AI Voice & Chat Agent
 
-This project is an AI-powered **Real Estate Agent** capable of handling buyer inquiries via **text chat** and **voice (VAPI)**. It uses natural language understanding, vector search for property recommendations, and integrates with a calendar system via **n8n** to schedule property showings.
+This project is an AI-powered **Real Estate Agent** capable of handling buyer inquiries via **text chat** and **voice (VAPI)**. It uses natural language understanding, vector search for property recommendations, and integrates with a calendar system via **Make** to schedule property showings.
 
 ---
 
@@ -12,7 +12,7 @@ This project is an AI-powered **Real Estate Agent** capable of handling buyer in
 - 📅 **Checks agent availability** and schedules appointments with buffer logic
 - 📞 **Voice-ready** via [VAPI](https://vapi.ai/)
 - 🧪 **Interactive test chat CLI** via terminal
-- 🔄 Integrated with **n8n** for real-time calendar access and scheduling
+- 🔄 Integrated with **Make** for real-time calendar access and scheduling
 
 ---
 
@@ -114,7 +114,7 @@ python .\src\voice_vapi.py
 | **LLM Provider** | OpenAI (via OpenRouter or directly) |
 | **Embedding Search** | [ChromaDB](https://docs.trychroma.com/) |
 | **Voice Integration** | [VAPI](https://vapi.ai/) |
-| **Scheduling Backend** | [n8n](https://n8n.io/) |
+| **Scheduling Backend** | [Make](https://www.make.com/) |
 | **Environment Handling** | `dotenv` |
 | **Web Framework** | FastAPI |
 | **Observability** | `logfire` |
@@ -127,7 +127,7 @@ The agent uses **tool-augmented prompting**. Based on user input, it can autonom
 
 1. `recommend_properties`: Finds top listings using vector search
 2. `get_agent_availability`: Computes availability with buffer and calendar integration
-3. `schedule_appointment`: Books a showing via n8n calendar webhook
+3. `schedule_appointment`: Books a showing via Make scenario webhook
 
 The agent is defined in `agent/realtor_agent.py` and loaded in both `chat.py` and `voice_vapi.py`.
 
