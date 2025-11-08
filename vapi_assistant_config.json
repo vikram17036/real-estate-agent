@@ -1,0 +1,35 @@
+{
+  "name": "Real Estate Agent Assistant",
+  "model": {
+    "provider": "openai",
+    "model": "gpt-4",
+    "temperature": 0.3,
+    "maxTokens": 500
+  },
+  "voice": {
+    "provider": "11labs",
+    "voiceId": "21m00Tcm4TlvDq8ikWAM", 
+    "stability": 0.5,
+    "similarityBoost": 0.75
+  },
+  "firstMessage": "Hi! I'm your virtual real estate assistant. I'm here to help you find the perfect property. What are you looking for today?",
+  "systemPrompt": "You are a friendly and enthusiastic virtual real estate assistant. You speak in a warm, polite tone, but you're also concise and to the point. Prospective buyers or renters call you for help. Your job is to: 1. Quickly collect their preferences 2. Recommend properties that match 3. Schedule a showing if they're interested. Stay focused, avoid small talk, and make it easy for callers to take the next step.",
+  "serverUrl": "https://your-domain.com/vapi-webhook/chat/completions",
+  "serverUrlSecret": "your-webhook-secret-if-needed",
+  "functions": [],
+  "webhook": {
+    "url": "https://your-domain.com/vapi-webhook/chat/completions",
+    "method": "POST",
+    "headers": {}
+  },
+  "responseDelay": 500,
+  "silenceTimeoutSeconds": 30,
+  "endCallFunctionEnabled": true,
+  "recordingEnabled": true,
+  "voicemailDetectionEnabled": true,
+  "fillersEnabled": true,
+  "backgroundSound": "office",
+  "maxDurationSeconds": 600
+}
+
+
