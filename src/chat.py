@@ -8,10 +8,8 @@ from dotenv import load_dotenv
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(dotenv_path=PROJECT_ROOT / ".env", override=True)
-from pinecone import Pinecone
 from typing import List
-from pydantic_ai.messages import ModelMessage
-from pydantic_ai.usage import Usage
+from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
 
 # Optional imports
 try:
@@ -22,48 +20,46 @@ except ImportError:
 
 # Local application imports
 try:
-    from src.agent.realtor_agent import realtor_agent
+    from src.agent.realtor_agent_langgraph import get_restaurant_agent
     from src.agent.agent_config import AgentDependencies
     from src.models.agent_schedule_config import AgentScheduleConfig
 except ModuleNotFoundError:
-    from agent.realtor_agent import realtor_agent
+    from agent.realtor_agent_langgraph import get_restaurant_agent
     from agent.agent_config import AgentDependencies
     from models.agent_schedule_config import AgentScheduleConfig
 
-# Optional cost tracking
-try:
-    from agent.agent_cost import compute_cost
-    COST_TRACKING_AVAILABLE = True
-except ImportError:
-    COST_TRACKING_AVAILABLE = False
+# Optional cost tracking - Note: Cost tracking will need to be adapted for LangGraph
+# try:
+#     from agent.agent_cost import compute_cost
+#     COST_TRACKING_AVAILABLE = True
+# except ImportError:
+COST_TRACKING_AVAILABLE = False
 
 async def main():
-    pinecone_api_key = os.getenv("PINECONE_API_KEY")
-    pinecone_index_name = os.getenv("PINECONE_INDEX_NAME", "real-estate-listings")
     make_webhook_url = os.getenv("MAKE_WEBHOOK_URL")
-    agent_timezone = os.getenv("AGENT_TIMEZONE")
+    agent_timezone = os.getenv("AGENT_TIMEZONE", "America/New_York")
     agent_schedule_config = AgentScheduleConfig(
         timezone=agent_timezone
     ) 
 
-    # Initialize Pinecone
-    pc = Pinecone(api_key=pinecone_api_key)
-    pinecone_index = pc.Index(pinecone_index_name)
-
-    # Initialize agent and user profile
-    agent = realtor_agent
+    # Initialize agent dependencies
     agent_deps = AgentDependencies(
-        pinecone_index=pinecone_index,
-        pinecone_index_name=pinecone_index_name,
         make_webhook_url=make_webhook_url,
         agent_schedule_config=agent_schedule_config
     )
 
-    print("Welcome to the Real Estate Agent Chat!")
+    # Create LangGraph agent
+    agent = get_restaurant_agent(agent_deps)
+
+    print("Welcome to the Restaurant Reservation Agent Chat!")
     message = "Hello"
 
-    message_history: List[ModelMessage] = []
-    agent_usage = Usage()
+    # Initialize state with messages
+    config = {}
+    state = {
+        "messages": []
+        # Note: selected_time_slot will be added automatically when needed
+    }
 
     # Chat loop
     while True:
@@ -72,28 +68,36 @@ async def main():
             print("Goodbye!")
             break
 
-        response = await agent.run(
-            message, 
-            deps=agent_deps,
-            message_history=message_history,
-            usage=agent_usage
-        )
+        # Add user message to state
+        state["messages"].append(HumanMessage(content=message))
         
-        message_history = response.all_messages()
+        # Invoke the agent
+        result = await agent.ainvoke(state, config)
         
-        print(f"Agent: {response.output}")
+        # Update state
+        state = result
+        
+        # Extract agent response - find last AIMessage (may not be the last message if tools executed)
+        agent_response = ""
+        for message in reversed(result["messages"]):
+            if isinstance(message, AIMessage) and message.content:
+                agent_response = message.content
+                break
+        
+        # Fallback if no AIMessage found
+        if not agent_response:
+            last_message = result["messages"][-1]
+            agent_response = str(last_message.content) if hasattr(last_message, 'content') else str(last_message)
+        
+        print(f"Agent: {agent_response}")
 
         # Prompt next input
         message = input("You: ")
 
+    # Note: Cost tracking would need to be adapted for LangGraph
     if COST_TRACKING_AVAILABLE:
-        try:
-            prompt_cost, completion_cost, total_cost = await compute_cost(usage=agent_usage)
-            print(f"prompt_cost: {prompt_cost}, completion_cost: {completion_cost}, total_cost: {total_cost}")
-        except Exception as e:
-            print(f"Cost tracking unavailable: {e}")
+        print("Cost tracking not yet implemented for LangGraph version")
     
-    print(f"request_tokens: {agent_usage.request_tokens}, response_tokens: {agent_usage.response_tokens}, total_tokens: {agent_usage.total_tokens}, requests: {agent_usage.requests}")
     
 
 

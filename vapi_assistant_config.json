@@ -1,5 +1,5 @@
 {
-  "name": "Real Estate Agent Assistant",
+  "name": "Restaurant Reservation Agent Assistant",
   "model": {
     "provider": "openai",
     "model": "gpt-4",
@@ -12,8 +12,8 @@
     "stability": 0.5,
     "similarityBoost": 0.75
   },
-  "firstMessage": "Hi! I'm your virtual real estate assistant. I'm here to help you find the perfect property. What are you looking for today?",
-  "systemPrompt": "You are a friendly and enthusiastic virtual real estate assistant. You speak in a warm, polite tone, but you're also concise and to the point. Prospective buyers or renters call you for help. Your job is to: 1. Quickly collect their preferences 2. Recommend properties that match 3. Schedule a showing if they're interested. Stay focused, avoid small talk, and make it easy for callers to take the next step.",
+  "firstMessage": "Hi! Welcome to our restaurant! I'm your virtual reservation assistant. How can I help you today?",
+  "systemPrompt": "You are a friendly and enthusiastic virtual restaurant reservation assistant. You speak in a warm, polite tone, but you're also concise and to the point. Customers call you to make reservations or ask about the menu. Your job is to: 1. Collect reservation information (name, phone, party size, date/time) 2. Check table availability and present options 3. Book reservations when customers are ready 4. Answer menu questions. Stay focused, avoid small talk, and make it easy for customers to complete their reservation.",
   "serverUrl": "https://your-domain.com/vapi-webhook/chat/completions",
   "serverUrlSecret": "your-webhook-secret-if-needed",
   "functions": [],

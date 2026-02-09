@@ -21,29 +21,44 @@ class PropertyRecommendation(BaseModel):
     longitude: float
     description: str
 
-def parse_pinecone_results(pinecone_results: dict) -> List[PropertyRecommendation]:
+def parse_pinecone_results(pinecone_results) -> List[PropertyRecommendation]:
     """
     Parse Pinecone query results into PropertyRecommendation objects.
     
-    Pinecone returns results in format:
-    {
-        'matches': [
-            {
-                'id': 'listing_id',
-                'score': 0.95,
-                'metadata': {...},
-                'values': [...]  # embedding vector
-            }
-        ]
-    }
+    Pinecone v5 returns a QueryResponse object (dataclass), not a dict.
+    This function handles both dict (old) and QueryResponse (v5) formats.
     """
     recommendations = []
     
-    if 'matches' not in pinecone_results:
+    # Handle Pinecone v5 QueryResponse object (dataclass)
+    if hasattr(pinecone_results, 'matches'):
+        matches = pinecone_results.matches
+    # Handle dict format (older versions)
+    elif isinstance(pinecone_results, dict) and 'matches' in pinecone_results:
+        matches = pinecone_results['matches']
+    else:
         return recommendations
     
-    for match in pinecone_results['matches']:
-        meta = match.get('metadata', {})
+    for match in matches:
+        # Extract metadata - handle both dataclass and dict
+        if hasattr(match, 'metadata'):
+            meta = match.metadata
+            # Convert dataclass to dict if needed
+            if hasattr(meta, '__dict__'):
+                meta = meta.__dict__
+            elif hasattr(meta, 'model_dump'):
+                meta = meta.model_dump()
+            elif not isinstance(meta, dict):
+                # If metadata is still not a dict, try to access as object
+                meta = {k: getattr(meta, k) for k in dir(meta) if not k.startswith('_')}
+        elif isinstance(match, dict):
+            meta = match.get('metadata', {})
+        else:
+            continue
+        
+        # Ensure meta is a dict
+        if not isinstance(meta, dict):
+            continue
         
         # Convert metadata values to proper types
         recommendation = PropertyRecommendation(
