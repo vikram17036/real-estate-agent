@@ -53,11 +53,11 @@ session_store: Dict[str, Dict] = {}
 
 @app.get("/")
 async def root():
-    return {"message": "Real Estate Agent API is running", "status": "healthy"}
+    return {"message": "Restaurant Reservation Agent API is running", "status": "healthy"}
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy", "service": "real-estate-agent"}
+    return {"status": "healthy", "service": "restaurant-reservation-agent"}
 
 class Call(BaseModel):
     id: str

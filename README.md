@@ -61,7 +61,7 @@ restaurant-agent/
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/yourusername/restaurant-agent.git
+git clone https://github.com/vikram17036/restaurant-agent.git
 cd restaurant-agent
 ```
 
